@@ -3,9 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>PDF XRef Fixer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .button-group {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .error {
+            color: red;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background-color: #e6ffe6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .file-input {
+            margin: 10px 0;
+        }
+        .download-link {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 5px;
+        }
+        .download-link:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-    
+    <div class="container">
+        <h1>PDF Cross-Reference Table Fixer</h1>
+        
+        <div class="section">
+            <h3>Load PDF File</h3>
+            <input type="file" id="fileInput" accept=".pdf" class="file-input">
+            <button onclick="loadSamplePdf()">Load Sample PDF</button>
+        </div>
+        
+        <div class="section">
+            <label for="inputPdf">Input PDF Data:</label>
+            <textarea id="inputPdf" placeholder="Paste your PDF data here or load a file..."></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="fixPdfXref()">Fix PDF Cross-Reference Table</button>
+            <button onclick="clearAll()">Clear All</button>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="section">
+            <label for="outputPdf">Fixed PDF Data:</label>
+            <textarea id="outputPdf" readonly></textarea>
+        </div>
+        
+        <div class="button-group">
+            <a id="downloadLink" class="download-link" style="display: none;" download="fixed.pdf">Download Fixed PDF</a>
+        </div>
+    </div>
+
+    <script src="PdfXrefFixer.js"></script>
+    <script>
+        function showMessage(message, isError = false) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = message;
+            messageDiv.className = isError ? 'error' : 'success';
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+                messageDiv.className = '';
+            }, 5000);
+        }
+
+        function loadSamplePdf() {
+            // Sample PDF content
+            const samplePdf = `%PDF-1.7
+
+1 0 obj  % entry point
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /MediaBox [ 0 0 200 400 ]
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R 
+    >>
+  >>
+  /Contents 5 0 R
+  /Annots [6 0 R]
+>>
+endobj
+
+4 0 obj
+<<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+
+5 0 obj  % page content
+<<
+  /Length 44
+>>
+stream
+BT
+70 50 TD
+/F1 12 Tf
+(Hello, world!) Tj
+ET
+endstream
+endobj
+
+6 0 obj
+<<
+  /Type /Annot 
+  /Rect [0 0 100 100 ] 
+  /Subtype /Highlight 
+  /QuadPoints [69.9398 58.8418 96.5932 58.8418 69.9398 47.3526 96.5932 47.3526 ] 
+  /M (D:20190101153417)  
+  /Contents (aaa)  
+  /F 4 
+  /C [1 1 0 ] 
+  /CA 1 
+  /Border [0 0 1 ] 
+  /P 3 0 R 
+>>
+endobj
+
+xref
+trailer
+<<
+  /Size 6
+  /Root 1 0 R
+>>
+
+startxref
+
+%%EOF`;
+            
+            document.getElementById('inputPdf').value = samplePdf;
+            showMessage('Sample PDF loaded successfully!');
+        }
+
+        function fixPdfXref() {
+            const inputPdf = document.getElementById('inputPdf').value.trim();
+            
+            if (!inputPdf) {
+                showMessage('Please enter or load PDF data first.', true);
+                return;
+            }
+            
+            try {
+                const fixedPdf = FixXref(inputPdf);
+                document.getElementById('outputPdf').value = fixedPdf;
+                
+                // Create download link
+                const blob = new Blob([fixedPdf], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = url;
+                downloadLink.style.display = 'inline-block';
+                
+                showMessage('PDF cross-reference table fixed successfully!');
+            } catch (error) {
+                showMessage('Error fixing PDF: ' + error.message, true);
+                console.error('Error:', error);
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('inputPdf').value = '';
+            document.getElementById('outputPdf').value = '';
+            document.getElementById('downloadLink').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            showMessage('All fields cleared.');
+        }
+
+        // File input handler
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('inputPdf').value = e.target.result;
+                    showMessage('File loaded successfully!');
+                };
+                reader.readAsText(file);
+            }
+        });
+    </script>
 </body>
 </html>
