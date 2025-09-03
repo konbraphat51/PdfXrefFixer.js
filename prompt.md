@@ -3,5 +3,7 @@
         - Cross Reference Table
         - trailer (until `EOF`)
     - If some footer already written, delete it and write a new one.
-- The input data is string of PDF data
-- The output is the fixed string of PDF data
+    - The input data is string of PDF data
+    - The output is the fixed string of PDF data
+
+- Make `index.html` able to test `FixXref()` through browser GUI
