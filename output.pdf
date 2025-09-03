@@ -1,0 +1,84 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj 
+<<
+/Pages 2 0 R
+/Type /Catalog
+>>
+endobj 
+2 0 obj 
+<<
+/MediaBox [0 0 200 400]
+/Kids [3 0 R]
+/Count 1
+/Type /Pages
+>>
+endobj 
+3 0 obj 
+<<
+/Parent 2 0 R
+/Annots [4 0 R]
+/MediaBox [0 0 200 400]
+/Resources 
+<<
+/Font 
+<<
+/F1 5 0 R
+>>
+>>
+/Contents 6 0 R
+/Type /Page
+>>
+endobj 
+5 0 obj 
+<<
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Type /Font
+>>
+endobj 
+6 0 obj 
+<<
+/Length 49
+>>
+stream
+BT
+70 50 TD
+/F1 12 Tf
+(Hello, world!) Tj
+ET
+
+endstream 
+endobj 
+4 0 obj 
+<<
+/CA 1
+/P 3 0 R
+/M (D:20190101153417)
+/QuadPoints [69.9398 58.8418 96.5932 58.8418 69.9398 47.3526 96.5932 47.3526]
+/Contents (aaa)
+/F 4
+/C [1 1 0]
+/Subtype /Highlight
+/Type /Annot
+/Border [0 0 1]
+/Rect [0 0 100 100]
+>>
+endobj xref
+0 7
+0000000000 65535 f 
+0000000015 00000 n 
+0000000066 00000 n 
+0000000149 00000 n 
+0000000471 00000 n 
+0000000295 00000 n 
+0000000369 00000 n 
+trailer
+
+<<
+/Root 1 0 R
+/Size 7
+>>
+startxref
+709
+%%EOF
